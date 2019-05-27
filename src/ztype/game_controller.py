@@ -2,7 +2,8 @@ import pygame
 from pygame.locals import QUIT
 from level import Level
 from board import Board
-from config import FPS, SCREEN_SIZE, WHITE, LEVEL_WORD_COUNT, LEVEL_FREQUENCY, LEVEL_SPEED
+from config import FPS, SCREEN_SIZE, WHITE, LEVEL_WORD_COUNT, \
+    LEVEL_FREQUENCY, LEVEL_SPEED, SCREEN_BACKGROUND
 
 
 class GameController(object):
@@ -39,7 +40,7 @@ class GameController(object):
                     return
 
             self.run_one_frame()
-            self.screen.fill(WHITE)
+            self.screen.fill(SCREEN_BACKGROUND)
             self.words_group.draw(self.screen)
             pygame.display.update()
 

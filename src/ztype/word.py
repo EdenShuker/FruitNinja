@@ -18,6 +18,7 @@ class Word(pygame.sprite.Sprite):
         self.letters = [letter for letter in word_str]
         self.speed = speed
         self.font = pygame.font.Font(None, FONT_SIZE)
+        # Attributes required to group.draw()
         self.image = self.font.render(word_str, True, FONT_COLOR)
         self.rect = self.image.get_rect()
 
@@ -27,4 +28,3 @@ class Word(pygame.sprite.Sprite):
         :param args: None.
         """
         self.rect.move_ip(self.speed)
-        print self.rect
