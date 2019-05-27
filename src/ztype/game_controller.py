@@ -2,24 +2,36 @@ import pygame
 from pygame.locals import QUIT
 from level import Level
 from board import Board
-from config import FPS, SCREEN_SIZE, WHITE
+from config import FPS, SCREEN_SIZE, WHITE, LEVEL_WORD_COUNT, LEVEL_FREQUENCY, LEVEL_SPEED
 
 
 class GameController(object):
+    """
+    Responsible on running the game - displaying frames and handling events
+    """
 
     def __init__(self):
+        """
+        Constructor.
+        """
         pygame.init()
         pygame.font.init()
         self.words_group = pygame.sprite.RenderPlain()
-        self.level = Level(1, [0, 1], 1)
+        self.level = Level(LEVEL_WORD_COUNT, LEVEL_SPEED, LEVEL_FREQUENCY)
         self.board = Board(self.level, self.words_group)
         self.screen = pygame.display.set_mode(SCREEN_SIZE)
         self.clock = pygame.time.Clock()
 
     def run_one_frame(self):
+        """
+        Drop words down the screen.
+        """
         self.words_group.update()
 
     def run(self):
+        """
+        Run main loop. Every tick update screen display.
+        """
         while True:
             self.clock.tick(FPS)
             for event in pygame.event.get():
@@ -33,6 +45,9 @@ class GameController(object):
 
 
 def main():
+    """
+    Run game.
+    """
     game_controller = GameController()
     game_controller.run()
 
