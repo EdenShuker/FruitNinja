@@ -3,7 +3,7 @@ class Level(object):
     Ztype level configurations.
     """
 
-    def __init__(self, words_count, falling_speed, frequency):
+    def __init__(self, words_count, falling_speed, frequency, word_length):
         """
         Constructor.
         :param words_count: Number of words.
@@ -13,3 +13,4 @@ class Level(object):
         self.words_count = words_count
         self.falling_speed = falling_speed
         self.frequency = frequency
+        self.word_length = word_length

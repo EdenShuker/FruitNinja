@@ -22,6 +22,9 @@ class Word(pygame.sprite.Sprite):
         self.image = self.font.render(word_str, True, FONT_COLOR)
         self.rect = self.image.get_rect()
 
+    def update_grid(self, x, y):
+        self.rect.topleft = (x, y)
+
     def update(self, *args):
         """
         Move word's rectangle.
