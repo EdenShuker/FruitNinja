@@ -1,5 +1,6 @@
 # display
 FPS = 60
+ZTYPE_CAPTION = "ztype"
 
 # colors
 BLACK = (0, 0, 0)
@@ -8,11 +9,10 @@ WHITE = (255, 255, 255)
 # screen
 SCREEN_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 500, 640
 SCREEN_BACKGROUND = BLACK
-DISPLAY_WIDTH = SCREEN_WIDTH * 0.9
 
 # word
-BASIC_FONT = 'Calibri'
-FONT_SIZE = 20
+BASIC_FONT = 'Consolas'
+FONT_SIZE = 18
 FONT_COLOR = WHITE
 FONT_HIGHLIGHT_COLOR = (36, 201, 47)
 WORD_BACKGROUND_COLOR = (200, 10, 10)
@@ -26,3 +26,4 @@ WORD_LENGTH = [2, 5]
 
 # files
 WORDS_FILE = "resources/words_dict_27.txt"
+ICON_PATH = "resources/images/ztype_icon.jpg"
