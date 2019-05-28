@@ -1,6 +1,6 @@
 # display
 FPS = 60
-ZTYPE_CAPTION = "ztype"
+ZTYPE_CAPTION = "Ztype"
 
 # colors
 BLACK = (0, 0, 0)
@@ -9,6 +9,8 @@ WHITE = (255, 255, 255)
 # screen
 SCREEN_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 500, 640
 SCREEN_BACKGROUND = BLACK
+MIDDLE = CENTER_WIDTH, CENTER_HEIGHT = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+LINE_SPACING = 30
 
 # word
 BASIC_FONT = 'Consolas'
@@ -25,5 +27,10 @@ LEVEL_FREQUENCY = 120
 WORD_LENGTH = [2, 5]
 
 # files
-WORDS_FILE = "resources/words_dict_27.txt"
-ICON_PATH = "resources/images/ztype_icon.jpg"
+WORDS = "resources/words.txt"
+ICON_PATH = "resources/images/favicon.png"
+
+# messages
+GAME_OVER = "Game Over"
+YOU_WIN = "You Win!"
+RESTART = "Press insert to restart or esc to quit"
