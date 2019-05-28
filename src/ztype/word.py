@@ -1,5 +1,5 @@
 import pygame
-from config import FONT_SIZE, FONT_COLOR
+from config import BASIC_FONT, FONT_SIZE, FONT_COLOR
 
 
 class Word(pygame.sprite.Sprite):
@@ -17,7 +17,7 @@ class Word(pygame.sprite.Sprite):
         super(Word, self).__init__(*groups)
         self.letters = [letter for letter in word_str]
         self.speed = speed
-        self.font = pygame.font.Font(None, FONT_SIZE)
+        self.font = pygame.font.SysFont(BASIC_FONT, FONT_SIZE)
         # Attributes required to group.draw()
         self.image = self.font.render(word_str, True, FONT_COLOR)
         self.rect = self.image.get_rect()
