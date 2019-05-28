@@ -2,7 +2,7 @@ import random
 import pickle
 
 from word import Word
-from config import SCREEN_WIDTH, WORDS_FILE, DISPLAY_WIDTH, FONT_SIZE
+from config import SCREEN_WIDTH, WORDS_FILE, FONT_SIZE
 
 
 class WordsManager(object):
@@ -18,13 +18,11 @@ class WordsManager(object):
         :param level: Level configuration.
         :param words_group: The group of words.
         """
-        self.level = level
-        self.words_group = words_group
-        self.words = self.generate_words()
-        self.determine_words_grid()
+        self._level = level
+        self._generate_words(words_group)
 
     @staticmethod
-    def load_words_dict():
+    def _load_words_dict():
         """
         Loads the words dictionary
         :return: dict
@@ -33,40 +31,41 @@ class WordsManager(object):
             words_by_length = pickle.load(f)
         return words_by_length
 
-    def pick_random_words(self):
+    def _pick_random_words(self):
         """
         Chooses words to be displayed this level.
         The choice itself is somewhat random (the higher the level
         of the game, the longer the words)
         :return:
         """
-        words = self.load_words_dict()
-        for _ in range(self.level.words_count):
-            possible_words = words[random.randint(*self.level.word_length)]
+        words = self._load_words_dict()
+        for _ in range(self._level.words_count):
+            possible_words = words[random.randint(*self._level.word_length)]
             random_index = random.randint(0, len(possible_words) - 1)
             yield possible_words[random_index]
 
-    def generate_words(self):
+    def _generate_words(self, words_group):
         """
         Randomly generates a list of falling words
         for the current level.
         """
-        return [Word(word, self.level.falling_speed, self.words_group) for word in self.pick_random_words()]
-
-    def determine_words_grid(self):
-        """
-        Changes the x, y values of each word.
-        :return:
-        """
         y = 0
-        for word in self.words:
-            word.update_grid(random.randint(0, DISPLAY_WIDTH), y)
-            y = y - self.range_between_y()
+        for word_string in self._pick_random_words():
+            word = Word(word_string, self._level.falling_speed, words_group)
+            self._place_word(word, y)
+            y = y - self._range_between_y()
 
-    def range_between_y(self):
+    @staticmethod
+    def _place_word(word, y):
+        """
+        Changes the x, y values of the given word.
+        """
+        word.update_grid(random.randint(0, SCREEN_WIDTH - word.rect.width), y)
+
+    def _range_between_y(self):
         """
         Return the diff between last y value to the next.
         Notice that it changes according to the level's difficulty
         :return: int
         """
-        return random.randrange(FONT_SIZE, self.level.frequency)
+        return random.randrange(FONT_SIZE, self._level.frequency)
