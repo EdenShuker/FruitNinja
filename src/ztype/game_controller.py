@@ -1,9 +1,10 @@
 import pygame
 from pygame.locals import QUIT
 from level import Level
-from board import Board
+from words_manager import WordsManager
 from config import FPS, SCREEN_SIZE, WHITE, LEVEL_WORD_COUNT, \
-    LEVEL_FREQUENCY, LEVEL_SPEED, SCREEN_BACKGROUND, SCREEN_HEIGHT
+    LEVEL_FREQUENCY, LEVEL_SPEED, SCREEN_BACKGROUND, SCREEN_HEIGHT, \
+    WORD_LENGTH
 
 
 class GameController(object):
@@ -18,8 +19,8 @@ class GameController(object):
         pygame.init()
         pygame.font.init()
         self.words_group = pygame.sprite.RenderPlain()
-        self.level = Level(LEVEL_WORD_COUNT, LEVEL_SPEED, LEVEL_FREQUENCY)
-        self.board = Board(self.level, self.words_group)
+        self.level = Level(LEVEL_WORD_COUNT, LEVEL_SPEED, LEVEL_FREQUENCY, WORD_LENGTH)
+        self.words_manager = WordsManager(self.level, self.words_group)
         self.screen = pygame.display.set_mode(SCREEN_SIZE)
         self.clock = pygame.time.Clock()
 
