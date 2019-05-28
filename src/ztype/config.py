@@ -24,4 +24,4 @@ LEVEL_FREQUENCY = 120
 WORD_LENGTH = [2, 5]
 
 # files
-WORDS_FILE = "resources/words_dict.txt"
+WORDS_FILE = "resources/words_dict_27.txt"
