@@ -1,5 +1,5 @@
 import pygame
-from config import BASIC_FONT, FONT_SIZE, FONT_COLOR
+from config import BASIC_FONT, FONT_SIZE, FONT_COLOR, FONT_HIGHLIGHT_COLOR
 
 
 class Word(pygame.sprite.Sprite):
@@ -28,3 +28,20 @@ class Word(pygame.sprite.Sprite):
         :param args: None.
         """
         self.rect.move_ip(self.speed)
+
+    def get_next_letter(self):
+        return self.letters[0]
+
+    def on_letter_typed(self, letter):
+        if self.letters[0] == letter:
+            self.letters.pop(0)
+            self.update_word_view()
+
+    def update_word_view(self):
+        self.image = self.font.render(''.join(self.letters), True, FONT_HIGHLIGHT_COLOR)
+
+    def is_typed_letter_is_next(self, letter):
+        return self.letters[0] == letter
+
+    def is_fully_typed(self):
+        return len(self.letters) == 0
