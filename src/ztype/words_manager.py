@@ -2,7 +2,7 @@ import random
 import pickle
 
 from ztype.word import Word
-from ztype.config import SCREEN_WIDTH, WORDS_FILE, FONT_SIZE
+from ztype.config import SCREEN_WIDTH, WORDS, FONT_SIZE
 
 
 class WordsManager(object):
@@ -27,7 +27,7 @@ class WordsManager(object):
         Loads the words dictionary
         :return: dict
         """
-        with open(WORDS_FILE, "rb") as f:
+        with open(WORDS, "rb") as f:
             words_by_length = pickle.load(f)
         return words_by_length
 

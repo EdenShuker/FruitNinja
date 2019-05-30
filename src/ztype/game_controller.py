@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import QUIT, KEYDOWN
+import sys
 
 from ztype.level import Level
 from ztype.words_manager import WordsManager
@@ -15,6 +16,7 @@ class GameController(object):
     def __init__(self):
         pygame.init()
         pygame.font.init()
+        self.font = pygame.font.SysFont(BASIC_FONT, FONT_SIZE)
         self.screen = self.initialize_display()
         self.words_group = pygame.sprite.RenderPlain()
         self.level = Level(LEVEL_WORD_COUNT, LEVEL_SPEED, LEVEL_FREQUENCY, WORD_LENGTH)
@@ -30,9 +32,25 @@ class GameController(object):
         """
         screen = pygame.display.set_mode(SCREEN_SIZE)
         pygame.display.set_caption(ZTYPE_CAPTION)
-        icon_surface = pygame.image.load(ICON_PATH)
+        icon_surface = pygame.image.load(ICON_PATH).convert_alpha()
         pygame.display.set_icon(icon_surface)
         return screen
+
+    def write_message(self, messages, width, height):
+        """
+        Writes a list of messages to screen (each message in a new line)
+        :param messages: list<strings>
+        :param width: int
+        :param height: int
+        """
+        self.screen.fill(BLACK)
+        for msg in messages:
+            text_surface = self.font.render(msg, True, WHITE)
+            text_rect = text_surface.get_rect()
+            text_rect.center = (width, height)
+            height = height + LINE_SPACING
+            self.screen.blit(text_surface, text_rect)
+        pygame.display.update()
 
     def remove_words_exceed_screen(self):
         """
@@ -76,6 +94,22 @@ class GameController(object):
         if words_starts_with_letter:
             self.current_typed_word = self.words_manager.get_lowest_y_axis_word(words_starts_with_letter)
 
+    @staticmethod
+    def restart():
+        """
+        Restarts the game by calling another instance of the controller
+        :return:
+        """
+        GameController().run()
+
+    @staticmethod
+    def terminate():
+        """
+        Terminates the game and exits the program
+        """
+        pygame.quit()
+        sys.exit()
+
     def run(self):
         """
         Runs the main loop.
@@ -84,15 +118,26 @@ class GameController(object):
         while True:
             self.clock.tick(FPS)
             for event in pygame.event.get():
-                if event.type == QUIT:
-                    return
+                if event.type == QUIT or (event.type == KEYDOWN and event.key == pygame.K_ESCAPE):
+                    self.terminate()
                 elif event.type == KEYDOWN:
+                    if event.key == pygame.K_INSERT:
+                        self.restart()
                     self.handle_key_down_events(event.unicode)
 
             self.run_one_frame()
             self.screen.fill(SCREEN_BACKGROUND)
             self.words_group.draw(self.screen)
+            self.is_level_complete()
             pygame.display.update()
+
+    def is_level_complete(self):
+        """
+        Checks if the user has managed to type all of the words,
+        and if so writes a simple message to screen
+        """
+        if not self.words_group:
+            self.write_message([YOU_WIN, RESTART], *MIDDLE)
 
 
 def main():
