@@ -117,6 +117,8 @@ class GameController(object):
         Runs the main loop.
         Updates the screen display every tick.
         """
+        self.show_start_menu()
+
         while True:
             self.clock.tick(FPS)
             for event in pygame.event.get():
@@ -128,6 +130,19 @@ class GameController(object):
             self.screen.fill(SCREEN_BACKGROUND)
             self.words_group.draw(self.screen)
             pygame.display.update()
+
+    def show_start_menu(self):
+        """
+        Shows the start menu.
+        The user can press amy key to start playing
+        """
+        while True:
+            self.clock.tick(FPS)
+            self.write_message([START], *MIDDLE)
+            for event in pygame.event.get():
+                self.handle_main_menu_events(event)
+                if event.type == KEYDOWN:
+                    return
 
     def is_level_complete(self):
         """

@@ -32,6 +32,7 @@ WORDS = 'resources/words.txt'
 ICON_PATH = 'resources/images/favicon.png'
 
 # messages
+START = 'Press any key to start'
 GAME_OVER = 'Game Over'
 YOU_WIN = 'You Win!'
 RESTART = 'Press insert to restart or esc to quit'
