@@ -15,4 +15,6 @@ class ScoreTracker(object):
         self._is_last_letter_typed_correctly = False
 
     def get_accuracy(self):
+        if self._total_letters_typed == 0:
+            return 0
         return float(self._total_letters_typed_correctly) / self._total_letters_typed

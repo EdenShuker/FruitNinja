@@ -59,15 +59,17 @@ class GameController(object):
         Removes words from the words group if their y value
         is bigger than the screen height
         """
-        map(lambda word: word.remove(self.words_group),
-            filter(lambda word: word.rect.bottom > SCREEN_HEIGHT, self.words_group.sprites()))
+        map(lambda word: word.remove(self.words_group), self.is_player_got_disqualified())
 
     def run_one_frame(self):
         """
         Drop words down the screen
         """
         self.words_group.update()
-        self.remove_words_exceed_screen()
+        if self.is_player_got_disqualified():
+            self.on_game_over()
+        elif self.is_level_complete():
+            self.on_level_complete()
 
     def handle_key_down_events(self, key_letter):
         """
@@ -130,8 +132,6 @@ class GameController(object):
             self.run_one_frame()
             self.screen.fill(SCREEN_BACKGROUND)
             self.words_group.draw(self.screen)
-            if self.is_level_complete():
-                self.on_level_complete()
             pygame.display.update()
 
     def is_level_complete(self):
@@ -139,13 +139,20 @@ class GameController(object):
         Checks if the user has managed to type all of the words,
         and if so writes a simple message to screen
         """
-        return not self.words_group
+        pass
         # if not self.words_group:
         #     self.write_message([YOU_WIN, RESTART], *MIDDLE)
         #     self.write_message([str(self.score_tracker.get_accuracy())], CENTER_WIDTH, CENTER_HEIGHT + 100)
 
     def on_level_complete(self):
+        # TODO: move to the next level. if it's last level call on_game_over
         pass
+
+    def is_player_got_disqualified(self):
+        """
+        :return: if words exceeded out of screen.
+        """
+        return list(filter(lambda word: word.rect.bottom > SCREEN_HEIGHT, self.words_group.sprites()))
 
     def on_game_over(self):
         """
@@ -163,7 +170,7 @@ class GameController(object):
         Display final score.
         :param accuracy: Game accuracy score.
         """
-        self.write_message([str(accuracy)], CENTER_WIDTH, CENTER_HEIGHT + 100)
+        self.write_message([str(accuracy)], *MIDDLE)
 
     def handle_main_menu_events(self, event):
         """
