@@ -75,6 +75,7 @@ class GameController(object):
 
         if self.current_typed_word:
             if self.current_typed_word.is_typed_letter_is_next(key_letter):
+                pygame.mixer.Sound(CHAR_HIT_SOUND).play()
                 self.score_tracker.correct_letter_typed()
                 self.current_typed_word.on_letter_typed(key_letter)
             else:
@@ -85,6 +86,11 @@ class GameController(object):
                 self.current_typed_word = None
         else:
             self.score_tracker.incorrect_letter_typed()
+
+    @staticmethod
+    def play_sound(sound_file, loops=0):
+        pygame.mixer.music.load(sound_file)
+        pygame.mixer.music.play(loops)
 
     def set_next_current_typed_word(self, key_letter):
         """
@@ -118,7 +124,7 @@ class GameController(object):
         Updates the screen display every tick.
         """
         self.show_start_menu()
-
+        self.play_sound(GAME_SOUND, PLAY_INFINITELY)
         while True:
             self.clock.tick(FPS)
             for event in pygame.event.get():

@@ -31,6 +31,11 @@ TIME_BETWEEN_LEVELS = 1000
 WORDS = 'resources/words.txt'
 ICON_PATH = 'resources/images/favicon.png'
 
+# sounds
+CHAR_HIT_SOUND = 'resources/sounds/plasma.ogg'
+GAME_SOUND = 'resources/sounds/endure.ogg'
+PLAY_INFINITELY = -1
+
 # messages
 START = 'Press any key to start'
 GAME_OVER = 'Game Over'
