@@ -55,16 +55,9 @@ class GameController(object):
             self.screen.blit(text_surface, text_rect)
         pygame.display.update()
 
-    def remove_words_exceed_screen(self):
-        """
-        Removes words from the words group if their y value
-        is bigger than the screen height
-        """
-        map(lambda word: word.remove(self.words_group), self.is_player_got_disqualified())
-
     def run_one_frame(self):
         """
-        Drop words down the screen
+        Drop words down the screen and track after game's status.
         """
         self.words_group.update()
         if self.is_player_got_disqualified():
