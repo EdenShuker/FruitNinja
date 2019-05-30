@@ -5,6 +5,7 @@ import sys
 from ztype.level import Level
 from ztype.words_manager import WordsManager
 from ztype.config import *
+from ztype.score_tracker import ScoreTracker
 
 
 class GameController(object):
@@ -18,10 +19,12 @@ class GameController(object):
         pygame.font.init()
         self.font = pygame.font.SysFont(BASIC_FONT, FONT_SIZE)
         self.screen = self.initialize_display()
-        self.words_group = pygame.sprite.RenderPlain()
-        self.level = Level(LEVEL_WORD_COUNT, LEVEL_SPEED, LEVEL_FREQUENCY, WORD_LENGTH)
-        self.words_manager = WordsManager(self.level, self.words_group)
         self.clock = pygame.time.Clock()
+        self.score_tracker = ScoreTracker()
+        self.levels = self.load_levels()
+        self.current_level_index = 0
+        self.words_group = pygame.sprite.RenderPlain()
+        self.words_manager = WordsManager(self.levels[self.current_level_index], self.words_group)
         self.current_typed_word = None
 
     @staticmethod
@@ -52,21 +55,15 @@ class GameController(object):
             self.screen.blit(text_surface, text_rect)
         pygame.display.update()
 
-    def remove_words_exceed_screen(self):
-        """
-        Removes words from the words group if their y value
-        is bigger than the screen height
-        :return:
-        """
-        map(lambda word: word.remove(self.words_group),
-            filter(lambda word: word.rect.bottom > SCREEN_HEIGHT, self.words_group.sprites()))
-
     def run_one_frame(self):
         """
-        Drop words down the screen
+        Drop words down the screen and track after game's status.
         """
         self.words_group.update()
-        self.remove_words_exceed_screen()
+        if self.is_player_got_disqualified():
+            self.on_game_over()
+        elif self.is_level_complete():
+            self.on_level_complete()
 
     def handle_key_down_events(self, key_letter):
         """
@@ -78,11 +75,16 @@ class GameController(object):
 
         if self.current_typed_word:
             if self.current_typed_word.is_typed_letter_is_next(key_letter):
+                self.score_tracker.correct_letter_typed()
                 self.current_typed_word.on_letter_typed(key_letter)
-
+            else:
+                self.score_tracker.incorrect_letter_typed()
             if self.current_typed_word.is_fully_typed():
+                self.score_tracker.word_fully_typed()
                 self.current_typed_word.remove(self.words_group)
                 self.current_typed_word = None
+        else:
+            self.score_tracker.incorrect_letter_typed()
 
     def set_next_current_typed_word(self, key_letter):
         """
@@ -118,26 +120,79 @@ class GameController(object):
         while True:
             self.clock.tick(FPS)
             for event in pygame.event.get():
-                if event.type == QUIT or (event.type == KEYDOWN and event.key == pygame.K_ESCAPE):
-                    self.terminate()
-                elif event.type == KEYDOWN:
-                    if event.key == pygame.K_INSERT:
-                        self.restart()
+                self.handle_main_menu_events(event)
+                if event.type == KEYDOWN:
                     self.handle_key_down_events(event.unicode)
 
             self.run_one_frame()
             self.screen.fill(SCREEN_BACKGROUND)
             self.words_group.draw(self.screen)
-            self.is_level_complete()
             pygame.display.update()
 
     def is_level_complete(self):
         """
-        Checks if the user has managed to type all of the words,
-        and if so writes a simple message to screen
+        Checks if the user has managed to type all of the words.
         """
-        if not self.words_group:
-            self.write_message([YOU_WIN, RESTART], *MIDDLE)
+        return not self.words_group
+
+    def on_level_complete(self):
+        """
+        If level is last level call game over. Otherwise move to the next level.
+        """
+        if self.current_level_index == len(self.levels) - 1:
+            self.on_game_over()
+        else:
+            self.move_next_level()
+
+    def move_next_level(self):
+        """
+        Move to the next level. Initialize level attributes.
+        """
+        self.current_level_index += 1
+        self.words_group = pygame.sprite.RenderPlain()
+        self.words_manager = WordsManager(self.levels[self.current_level_index], self.words_group)
+        self.current_typed_word = None
+
+    def is_player_got_disqualified(self):
+        """
+        :return: if words exceeded out of screen.
+        """
+        return list(filter(lambda word: word.rect.bottom > SCREEN_HEIGHT, self.words_group.sprites()))
+
+    def on_game_over(self):
+        """
+        Display final score.
+        """
+        accuracy, wpm = self.score_tracker.get_score()
+        while True:
+            self.clock.tick(FPS)
+            for event in pygame.event.get():
+                self.handle_main_menu_events(event)
+            self.display_score(accuracy, wpm)
+
+    def display_score(self, accuracy, wpm):
+        """
+        Display final score
+        :param accuracy: game accuracy score
+        :param wpm: typing speed using the wpm measure
+        """
+        self.write_message([ACCURACY.format(accuracy),
+                            WPM.format(wpm)], *MIDDLE)
+
+    def handle_main_menu_events(self, event):
+        """
+        Event handler for events such as quit or restart.
+        :param event: pygame event.
+        """
+        if event.type == QUIT or (event.type == KEYDOWN and event.key == pygame.K_ESCAPE):
+            self.terminate()
+        elif event.type == KEYDOWN:
+            if event.key == pygame.K_INSERT:
+                self.restart()
+
+    @staticmethod
+    def load_levels():
+        return [Level(LEVEL_WORD_COUNT, LEVEL_SPEED, LEVEL_FREQUENCY, WORD_LENGTH)]
 
 
 def main():

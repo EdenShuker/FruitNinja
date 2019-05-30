@@ -1,6 +1,6 @@
 # display
 FPS = 60
-ZTYPE_CAPTION = "Ztype"
+ZTYPE_CAPTION = 'Ztype'
 
 # colors
 BLACK = (0, 0, 0)
@@ -27,10 +27,12 @@ LEVEL_FREQUENCY = 120
 WORD_LENGTH = [2, 5]
 
 # files
-WORDS = "resources/words.txt"
-ICON_PATH = "resources/images/favicon.png"
+WORDS = 'resources/words.txt'
+ICON_PATH = 'resources/images/favicon.png'
 
 # messages
-GAME_OVER = "Game Over"
-YOU_WIN = "You Win!"
-RESTART = "Press insert to restart or esc to quit"
+GAME_OVER = 'Game Over'
+YOU_WIN = 'You Win!'
+RESTART = 'Press insert to restart or esc to quit'
+ACCURACY = 'Accuracy: {}%'
+WPM = 'WPM: {}'
