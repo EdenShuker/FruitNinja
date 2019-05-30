@@ -20,7 +20,7 @@ class GameController(object):
         self.font = pygame.font.SysFont(BASIC_FONT, FONT_SIZE)
         self.screen = self.initialize_display()
         self.clock = pygame.time.Clock()
-        self.score_tracker = ScoreTracker()
+        self.score_tracker = ScoreTracker(TIME_BETWEEN_LEVELS)
         self.levels = self.load_levels()
         self.current_level_index = 0
         self.words_group = pygame.sprite.RenderPlain()
@@ -60,8 +60,8 @@ class GameController(object):
         Drop words down the screen and track after game's status.
         """
         self.words_group.update()
-        if self.is_player_got_disqualified():
-            self.on_game_over()
+        if self.is_player_disqualified():
+            self.on_game_over(GAME_OVER)
         elif self.is_level_complete():
             self.on_level_complete()
 
@@ -140,44 +140,46 @@ class GameController(object):
         If level is last level call game over. Otherwise move to the next level.
         """
         if self.current_level_index == len(self.levels) - 1:
-            self.on_game_over()
+            self.on_game_over(YOU_WIN)
         else:
-            self.move_next_level()
+            self.move_to_next_level()
 
-    def move_next_level(self):
+    def move_to_next_level(self):
         """
         Move to the next level. Initialize level attributes.
         """
         self.current_level_index += 1
+        self.write_message([LEVEL.format(self.current_level_index + 1)], *MIDDLE)
+        pygame.time.wait(TIME_BETWEEN_LEVELS)
         self.words_group = pygame.sprite.RenderPlain()
         self.words_manager = WordsManager(self.levels[self.current_level_index], self.words_group)
         self.current_typed_word = None
 
-    def is_player_got_disqualified(self):
+    def is_player_disqualified(self):
         """
         :return: if words exceeded out of screen.
         """
         return list(filter(lambda word: word.rect.bottom > SCREEN_HEIGHT, self.words_group.sprites()))
 
-    def on_game_over(self):
+    def on_game_over(self, msg):
         """
         Display final score.
         """
-        accuracy, wpm = self.score_tracker.get_score()
+        accuracy, wpm = self.score_tracker.get_score(self.current_level_index)
         while True:
             self.clock.tick(FPS)
             for event in pygame.event.get():
                 self.handle_main_menu_events(event)
-            self.display_score(accuracy, wpm)
+            self.display_score(accuracy, wpm, msg)
 
-    def display_score(self, accuracy, wpm):
+    def display_score(self, accuracy, wpm, msg):
         """
         Display final score
         :param accuracy: game accuracy score
         :param wpm: typing speed using the wpm measure
+        :param msg: string
         """
-        self.write_message([ACCURACY.format(accuracy),
-                            WPM.format(wpm)], *MIDDLE)
+        self.write_message([msg, SCORE.format(accuracy, wpm)], *MIDDLE)
 
     def handle_main_menu_events(self, event):
         """
@@ -192,7 +194,12 @@ class GameController(object):
 
     @staticmethod
     def load_levels():
-        return [Level(LEVEL_WORD_COUNT, LEVEL_SPEED, LEVEL_FREQUENCY, WORD_LENGTH)]
+        """
+        Loads the levels of the game
+        :return: list<Level>
+        """
+        return [Level(*level_config) for level_config in
+                zip(LEVEL_WORD_COUNT, LEVEL_SPEED, LEVEL_FREQUENCY, LEVEL_WORDS_LENGTH)]
 
 
 def main():

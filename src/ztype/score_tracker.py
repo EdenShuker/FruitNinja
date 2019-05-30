@@ -5,16 +5,16 @@ class ScoreTracker(object):
     """
     Tracks after game's score.
     """
+    MILLISECOND_TO_MINUTE = 60000
 
     def __init__(self, time_between_levels=0):
         self._total_letters_typed = 0
         self._total_letters_typed_correctly = 0
         self._is_last_letter_typed_correctly = True
         self._total_typed_words = 0
-        self._level = 1
         self._start_time = time.time()
         self._end_time = 0
-        self._time_between_levels = time_between_levels
+        self._time_between_levels = time_between_levels / self.MILLISECOND_TO_MINUTE
 
     def correct_letter_typed(self):
         """
@@ -43,21 +43,21 @@ class ScoreTracker(object):
     def word_fully_typed(self):
         self._total_typed_words += 1
 
-    def get_real_time_in_minutes(self):
+    def get_real_time_in_minutes(self, level):
         """
         Returns the minutes passed since the start of the game,
         without counting the breaks between levels
         :return: int
         """
-        end_time = time.time() - (self._time_between_levels * self._level)
+        end_time = time.time() - (self._time_between_levels * level)
         return (end_time - self._start_time) / 60
 
-    def get_wpm(self):
+    def get_wpm(self, level):
         """
         Returns the speed using the word-per-minute measure
         :return: float
         """
-        return round(self._total_typed_words / self.get_real_time_in_minutes())
+        return round(self._total_typed_words / self.get_real_time_in_minutes(level))
 
-    def get_score(self):
-        return self.get_accuracy(), self.get_wpm()
+    def get_score(self, level):
+        return self.get_accuracy(), self.get_wpm(level)
