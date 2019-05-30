@@ -5,6 +5,7 @@ import sys
 from ztype.level import Level
 from ztype.words_manager import WordsManager
 from ztype.config import *
+from ztype.score_tracker import ScoreTracker
 
 
 class GameController(object):
@@ -21,6 +22,7 @@ class GameController(object):
         self.words_group = pygame.sprite.RenderPlain()
         self.level = Level(LEVEL_WORD_COUNT, LEVEL_SPEED, LEVEL_FREQUENCY, WORD_LENGTH)
         self.words_manager = WordsManager(self.level, self.words_group)
+        self.score_tracker = ScoreTracker()
         self.clock = pygame.time.Clock()
         self.current_typed_word = None
 
@@ -56,7 +58,6 @@ class GameController(object):
         """
         Removes words from the words group if their y value
         is bigger than the screen height
-        :return:
         """
         map(lambda word: word.remove(self.words_group),
             filter(lambda word: word.rect.bottom > SCREEN_HEIGHT, self.words_group.sprites()))
@@ -78,11 +79,15 @@ class GameController(object):
 
         if self.current_typed_word:
             if self.current_typed_word.is_typed_letter_is_next(key_letter):
+                self.score_tracker.correct_letter_typed()
                 self.current_typed_word.on_letter_typed(key_letter)
-
+            else:
+                self.score_tracker.incorrect_letter_typed()
             if self.current_typed_word.is_fully_typed():
                 self.current_typed_word.remove(self.words_group)
                 self.current_typed_word = None
+        else:
+            self.score_tracker.incorrect_letter_typed()
 
     def set_next_current_typed_word(self, key_letter):
         """
@@ -118,17 +123,15 @@ class GameController(object):
         while True:
             self.clock.tick(FPS)
             for event in pygame.event.get():
-                if event.type == QUIT or (event.type == KEYDOWN and event.key == pygame.K_ESCAPE):
-                    self.terminate()
-                elif event.type == KEYDOWN:
-                    if event.key == pygame.K_INSERT:
-                        self.restart()
+                self.handle_main_menu_events(event)
+                if event.type == KEYDOWN:
                     self.handle_key_down_events(event.unicode)
 
             self.run_one_frame()
             self.screen.fill(SCREEN_BACKGROUND)
             self.words_group.draw(self.screen)
-            self.is_level_complete()
+            if self.is_level_complete():
+                self.on_level_complete()
             pygame.display.update()
 
     def is_level_complete(self):
@@ -136,8 +139,42 @@ class GameController(object):
         Checks if the user has managed to type all of the words,
         and if so writes a simple message to screen
         """
-        if not self.words_group:
-            self.write_message([YOU_WIN, RESTART], *MIDDLE)
+        return not self.words_group
+        # if not self.words_group:
+        #     self.write_message([YOU_WIN, RESTART], *MIDDLE)
+        #     self.write_message([str(self.score_tracker.get_accuracy())], CENTER_WIDTH, CENTER_HEIGHT + 100)
+
+    def on_level_complete(self):
+        pass
+
+    def on_game_over(self):
+        """
+        Display final score.
+        """
+        accuracy = self.score_tracker.get_accuracy()
+        while True:
+            self.clock.tick(FPS)
+            for event in pygame.event.get():
+                self.handle_main_menu_events(event)
+            self.display_score(accuracy)
+
+    def display_score(self, accuracy):
+        """
+        Display final score.
+        :param accuracy: Game accuracy score.
+        """
+        self.write_message([str(accuracy)], CENTER_WIDTH, CENTER_HEIGHT + 100)
+
+    def handle_main_menu_events(self, event):
+        """
+        Event handler for events such as quit or restart.
+        :param event: pygame event.
+        """
+        if event.type == QUIT or (event.type == KEYDOWN and event.key == pygame.K_ESCAPE):
+            self.terminate()
+        elif event.type == KEYDOWN:
+            if event.key == pygame.K_INSERT:
+                self.restart()
 
 
 def main():
