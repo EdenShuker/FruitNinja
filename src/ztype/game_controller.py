@@ -80,6 +80,7 @@ class GameController(object):
             else:
                 self.score_tracker.incorrect_letter_typed()
             if self.current_typed_word.is_fully_typed():
+                self.score_tracker.word_fully_typed()
                 self.current_typed_word.remove(self.words_group)
                 self.current_typed_word = None
         else:
@@ -162,19 +163,21 @@ class GameController(object):
         """
         Display final score.
         """
-        accuracy = self.score_tracker.get_accuracy()
+        accuracy, wpm = self.score_tracker.get_score()
         while True:
             self.clock.tick(FPS)
             for event in pygame.event.get():
                 self.handle_main_menu_events(event)
-            self.display_score(accuracy)
+            self.display_score(accuracy, wpm)
 
-    def display_score(self, accuracy):
+    def display_score(self, accuracy, wpm):
         """
-        Display final score.
-        :param accuracy: Game accuracy score.
+        Display final score
+        :param accuracy: game accuracy score
+        :param wpm: typing speed using the wpm measure
         """
-        self.write_message(['Accuracy', str(accuracy)], *MIDDLE)
+        self.write_message([ACCURACY.format(accuracy),
+                            WPM.format(wpm)], *MIDDLE)
 
     def handle_main_menu_events(self, event):
         """
