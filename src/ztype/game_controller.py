@@ -55,7 +55,7 @@ class GameController(object):
         A simple key strokes listener that follows the user's typing
         :param key_letter: string
         """
-        if not self.current_typed_word:
+        if (not self.current_typed_word) or (self.current_typed_word not in self.words_group.sprites()):
             self.set_next_current_typed_word(key_letter)
 
         if self.current_typed_word:
